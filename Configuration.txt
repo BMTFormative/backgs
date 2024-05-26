@@ -1,0 +1,29 @@
+php artisan make:migration create_products_table
+php artisan make:model Product
+php artisan make:controller ProductController --api
+php artisan make:seeder ProductSeeder
+php artisan db:seed --class=ProductSeeder
+----------------------
+php artisan make:migration create_suppliers_table --create=suppliers
+php artisan make:model Supplier
+php artisan make:controller SupplierController --api
+php artisan make:seeder SupplierSeeder
+php artisan db:seed --class=SupplierSeeder
+----------------------
+php artisan make:migration create_customers_table --create=customers
+php artisan make:model Customer
+php artisan make:controller CustomerController --api
+php artisan make:seeder CustomerSeeder
+php artisan db:seed --class=CustomerSeeder
+----------------------
+php artisan make:migration create_sales_table --create=sales
+php artisan make:model Sale
+php artisan make:controller SaleController --api
+php artisan make:seeder SaleSeeder
+php artisan db:seed --class=SaleSeeder
+----------------------
+php artisan make:migration create_stocks_table --create=stocks
+php artisan make:model Stock
+php artisan make:controller StockController --api
+php artisan make:seeder StockSeeder
+php artisan db:seed --class=StockSeeder

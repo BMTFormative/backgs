@@ -22,7 +22,7 @@ class ProductController extends Controller
             'Designation' => 'required|string',
             'Marque' => 'nullable|string',
             'Prix' => 'required|numeric|min:0',
-            'Quantity' => 'required|integer|min:0',
+            'Quantity' => 'nullable|integer',
             'Rayon' => 'nullable|string',
         ]);
 

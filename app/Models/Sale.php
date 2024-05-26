@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sale extends Model
 {
-    protected $fillable = ['SaleNumber', 'DateSale', 'OrderType', 'SupplierId', 'ProductId', 'Qty', 'Prix'];
+    protected $fillable = ['SaleNumber', 'DateSale', 'OrderType', 'CustomerId', 'ProductId', 'Qty', 'Prix'];
 
-    public function supplier()
+    public function customer()
     {
-        return $this->belongsTo(Supplier::class, 'SupplierId', 'id');
+        return $this->belongsTo(Supplier::class, 'CustomerId', 'id');
     }
 
     public function product()

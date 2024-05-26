@@ -33,3 +33,7 @@ Route::apiResource('suppliers', SupplierController::class);
 Route::apiResource('customers', CustomerController::class);
 Route::apiResource('sales', SaleController::class);
 Route::apiResource('stocks', StockController::class);
+
+
+Route::get('sales/by-number/{saleNumber}', [SaleController::class, 'fetchBySaleNumber']);
+

@@ -7,7 +7,9 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\StockController;
-
+use App\Http\Controllers\PaycustomerController;
+use App\Http\Controllers\TotalpaymentController;
+use App\Http\Controllers\TotalamountController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -33,6 +35,7 @@ Route::apiResource('suppliers', SupplierController::class);
 Route::apiResource('customers', CustomerController::class);
 Route::apiResource('sales', SaleController::class);
 Route::apiResource('stocks', StockController::class);
+Route::apiResource('paycustomers', PaycustomerController::class);
 
 
 Route::get('sales/by-number/{saleNumber}', [SaleController::class, 'fetchBySaleNumber']);

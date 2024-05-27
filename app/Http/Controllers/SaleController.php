@@ -3,14 +3,63 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sale;
+use App\Models\Customer;
+use App\Models\totalpayment;
+use App\Models\totalamount;
 use Illuminate\Http\Request;
 
 class SaleController extends Controller
 {
     public function index()
     {
+        // Fetch all sales
         $sales = Sale::with(['customer', 'product'])->get();
-        return response()->json($sales);
+     
+        // Temporary array to hold grouped data
+        $groupedData = [];
+
+        // Iterate over sales to group and format them
+        foreach ($sales as $sale) {
+            $key = $sale->SaleNumber; // Group by SaleNumber
+            // Fetch total payments grouped by SaleNumber
+            $TotalPay = totalpayment::where('SaleNumber', $key)->first();
+            $TotalSale = totalamount::where('SaleNumber', $key)->first();
+            // Initialize group if it doesn't exist
+            if (!isset($groupedData[$key])) {
+                $groupedData[$key] = [
+                    'SaleNumber' => $sale->SaleNumber,
+                    'CustomerId' => $sale->CustomerId,
+                    'DateSale' => $sale->DateSale,
+                    'OrderType' => $sale->OrderType,
+                    'DynamicFields' => [],
+                    'TotalPayment' => $TotalPay->totalpayment ?? 0, // Default to 0 if no payment exists
+                    'TotalAmount' => $TotalSale->totalamount ?? 0, // Default to 0 if no payment exists
+                    'CustomerName' => $sale->customer ? $sale->customer->Nom : 'Unknown', // Accessing customer's name
+                    //'id' => $sale->id, // Assuming the ID remains relevant
+                ];
+            }
+
+            // Add product to DynamicFields
+            $groupedData[$key]['DynamicFields'][] = [
+                'ProductId' => $sale->ProductId,
+                'Designation' => $sale->product->Designation, // Assuming 'Designation' is the name of the field in the Product model
+                'Qty' => $sale->Qty,
+                'PrixVente' => $sale->Prix,
+                'Montant' => $sale->Qty * $sale->Prix // Calculate Montant based on Qty and PrixDetail
+            ];
+        }
+
+        // Calculate total global for each group
+        foreach ($groupedData as $key => $value) {
+            $totalGlobal = 0;
+            foreach ($value['DynamicFields'] as $item) {
+                $totalGlobal += $item['Montant'];
+            }
+            $groupedData[$key]['TotalGlobal'] = $totalGlobal;
+        }
+
+        // Return response
+        return response()->json(array_values($groupedData)); // Convert to array values to reindex keys
     }
 
     public function store(Request $request)
@@ -21,9 +70,9 @@ class SaleController extends Controller
         foreach ($jsonData['DynamicFields'] as $item) {
             $sale = new Sale();
             $sale->SaleNumber = $jsonData['SaleNumber'];
-            $sale->DateSale = $jsonData['Datesale'];
+            $sale->DateSale = $jsonData['DateSale'];
             $sale->OrderType = $jsonData['OrderType'];
-            $sale->SupplierId = $jsonData['CustomerId']; // Assuming CustomerId is the SupplierId
+            $sale->CustomerId = $jsonData['CustomerId']; // Assuming CustomerId is the CustomerId
             $sale->ProductId = $item['ProductId'];
             $sale->Qty = $item['Qty'];
             $sale->Prix = $item['PrixVente'];

@@ -27,3 +27,15 @@ php artisan make:model Stock
 php artisan make:controller StockController --api
 php artisan make:seeder StockSeeder
 php artisan db:seed --class=StockSeeder
+----------------------
+php artisan make:migration create_paycustomers_table --create=paycustomers
+php artisan make:model Paycustomer
+php artisan make:controller PaycustomerController --api
+php artisan make:seeder PaycustomerSeeder
+php artisan db:seed --class=PaycustomerSeeder
+----------------------View calculation totalpayment --------------------
+php artisan make:model totalpayment
+php artisan make:controller TotalpaymentController --api
+----------------------View calculation totalamount--------------------
+php artisan make:model totalamount
+php artisan make:controller TotalamountController --api

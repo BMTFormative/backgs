@@ -1,3 +1,14 @@
+CREATE VIEW TotalPayments AS
+ SELECT paycustomers."SaleNumber",sum(paycustomers."Amount") AS TotalPayment
+ FROM paycustomers
+ GROUP BY paycustomers."SaleNumber";
+
+
+CREATE VIEW TotalAmounts AS
+SELECT "SaleNumber",SUM("Qty" * "Prix") AS TotalAmount
+FROM sales
+GROUP BY "SaleNumber";
+------------------------------------
 php artisan make:migration create_products_table
 php artisan make:model Product
 php artisan make:controller ProductController --api

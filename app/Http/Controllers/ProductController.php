@@ -10,8 +10,17 @@ class ProductController extends Controller
     // GET /products
     public function index()
     {
-        $products = Product::all();
-        return response()->json($products);
+        // Assuming you have established a relationship in your Product model
+            $products = Product::with('qtyChange')->get(); // 'qtyChange' is the relation defined in Product model
+            // Map each product to include net_change directly
+            $products = $products->map(function ($product) {
+                // Add net_change directly to the product array
+                $product->net_change = $product->qtyChange ? $product->qtyChange->net_change : 0;
+                unset($product->qtyChange);  // Optionally remove the qtyChange relation from the response
+                return $product;
+            });
+
+            return response()->json($products);
     }
 
     // POST /products

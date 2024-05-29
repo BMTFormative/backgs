@@ -9,6 +9,30 @@ SELECT "SaleNumber",SUM("Qty" * "Prix") AS TotalAmount
 FROM sales
 GROUP BY "SaleNumber";
 
+CREATE VIEW Globalsellbuys AS
+SELECT 
+    coalesce(gp."CustomerId", gs."CustomerId") AS "CustomerId",
+    coalesce(gp.GlobalPayments, 0) AS GlobalPayments,
+    coalesce(gs.GlobalSales, 0) AS GlobalSales
+FROM 
+    (SELECT 
+        sales."CustomerId",
+        SUM(paycustomers."Amount") AS GlobalPayments
+     FROM 
+        paycustomers
+        JOIN sales ON paycustomers."SaleNumber" = sales."SaleNumber"
+     GROUP BY 
+        sales."CustomerId") gp
+FULL OUTER JOIN
+    (SELECT 
+        sales."CustomerId",
+        SUM(sales."Qty"::numeric * sales."Prix") AS GlobalSales
+     FROM 
+        sales
+     GROUP BY 
+        sales."CustomerId") gs
+ON gp."CustomerId" = gs."CustomerId";
+
 
 CREATE VIEW product_qty_changes AS
 WITH sales_sum AS (
@@ -75,4 +99,7 @@ php artisan make:model totalamount
 php artisan make:controller TotalamountController --api
 ----------------------View calculation totalamount--------------------
 php artisan make:model ProductQtyChange 
+----------------------View calculation Globalsellbuys--------------------
+php artisan make:model globalsellbuy
+php artisan make:controller GlobalsellbuyController --api
 

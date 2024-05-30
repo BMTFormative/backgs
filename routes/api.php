@@ -8,9 +8,8 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\PaycustomerController;
-use App\Http\Controllers\TotalpaymentController;
-use App\Http\Controllers\TotalamountController;
 use App\Http\Controllers\GlobalsellbuyController;
+use App\Http\Controllers\GlobalpaymentController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,6 +37,7 @@ Route::apiResource('sales', SaleController::class);
 Route::apiResource('stocks', StockController::class);
 Route::apiResource('paycustomers', PaycustomerController::class);
 Route::apiResource('globalsellbuys', GlobalsellbuyController::class);
+Route::apiResource('globalpayments', GlobalpaymentController::class);
 
 
 Route::get('sales/by-number/{saleNumber}', [SaleController::class, 'fetchBySaleNumber']);

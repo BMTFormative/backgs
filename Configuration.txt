@@ -1,13 +1,13 @@
 CREATE VIEW TotalPayments AS
  SELECT paycustomers."SaleNumber",sum(paycustomers."Amount") AS TotalPayment
  FROM paycustomers
- GROUP BY paycustomers."SaleNumber";
+ GROUP BY paycustomers."SaleNumber" ;
 
 
 CREATE VIEW TotalAmounts AS
-SELECT "SaleNumber",SUM("Qty" * "Prix") AS TotalAmount
+SELECT "SaleNumber",SUM("Qty" * "Prix") AS TotalAmount , "DateSale"
 FROM sales
-GROUP BY "SaleNumber";
+GROUP BY "SaleNumber" ,"DateSale";
 
 CREATE VIEW Globalsellbuys AS
 SELECT 
@@ -91,6 +91,12 @@ php artisan make:model Paycustomer
 php artisan make:controller PaycustomerController --api
 php artisan make:seeder PaycustomerSeeder
 php artisan db:seed --class=PaycustomerSeeder
+---------------------GlobalepaymentId
+php artisan make:migration create_globalpayments_table --create=globalpayments
+php artisan make:model Globalpayment
+php artisan make:controller GlobalpaymentController --api
+php artisan make:seeder GlobalpaymentSeeder
+php artisan db:seed --class=GlobalpaymentSeeder
 ----------------------View calculation totalpayment --------------------
 php artisan make:model totalpayment
 php artisan make:controller TotalpaymentController --api
@@ -103,3 +109,38 @@ php artisan make:model ProductQtyChange
 php artisan make:model globalsellbuy
 php artisan make:controller GlobalsellbuyController --api
 
+
+--------------------------------------------------------------------------- function split global payment 
+CREATE OR REPLACE FUNCTION allocate_global_payment(global_payment_id bigint, total_payment_amount decimal)
+RETURNS void AS $$
+DECLARE
+    current_sale record;  -- Holds each row fetched from the loop query
+    remaining_payment decimal := total_payment_amount;
+    allocate_amount decimal;
+BEGIN
+    -- Loop through each sale and allocate the payment
+    FOR current_sale IN 
+        SELECT s."SaleNumber",s."created_at", s."totalamount" - COALESCE(SUM(p."Amount"), 0) AS outstanding
+        FROM totalamounts s
+        LEFT JOIN paycustomers p ON s."SaleNumber" = p."SaleNumber"
+        --WHERE s."CustomerId" = (SELECT "CustomerId" FROM globalpayments )
+        GROUP BY s."SaleNumber", s."totalamount" ,s."created_at"
+        HAVING s."totalamount" - COALESCE(SUM(p."Amount"), 0) > 0
+        ORDER BY s."created_at" ASC
+    LOOP
+        -- Calculate the amount to allocate to this sale
+        IF remaining_payment <= 0 THEN
+            EXIT;
+        END IF;
+
+        allocate_amount := LEAST(current_sale.outstanding, remaining_payment);
+
+        -- Insert into paycustomers using correct column names and record field access
+        INSERT INTO public.paycustomers("SaleNumber", "DatePayment", "Amount", "GlobalepaymentId")
+        VALUES (current_sale."SaleNumber", NOW(), allocate_amount, global_payment_id);
+
+        -- Update remaining payment
+        remaining_payment := remaining_payment - allocate_amount;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;

@@ -13,12 +13,13 @@ class CreatePaycustomersTable extends Migration
      */
     public function up()
     {
-        Schema::create('paycustomers', function (Blueprint $table) {
+        Schema::create('payheaders', function (Blueprint $table) {
             $table->id();
-            $table->string('SaleNumber');
-            $table->dateTime('DatePayment');
-            $table->decimal('Amount', 10, 2);
-            $table->timestamps();
+            $table->string('SaleNumber');  
+            $table->dateTime('DatePayment');  
+            $table->bigInteger('GlobalepaymentId')->unsigned();  
+            $table->decimal('Amount', 10, 2);  
+            $table->timestamps();  
         });
     }
 

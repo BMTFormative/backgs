@@ -27,6 +27,7 @@ class SaleController extends Controller
             // Initialize group if it doesn't exist
             if (!isset($groupedData[$key])) {
                 $groupedData[$key] = [
+                    'id' => $sale->id,
                     'SaleNumber' => $sale->SaleNumber,
                     'CustomerId' => $sale->CustomerId,
                     'DateSale' => $sale->DateSale,

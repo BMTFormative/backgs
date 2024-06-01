@@ -13,9 +13,10 @@ class CreatePaycustomersTable extends Migration
      */
     public function up()
     {
-        Schema::create('payheaders', function (Blueprint $table) {
-            $table->id();
+        Schema::create('paycustomers', function (Blueprint $table) {
+            $table->id();  
             $table->string('SaleNumber');  
+            $table->bigInteger('CustomerId')->unsigned();  // bigint without foreign key constraint
             $table->dateTime('DatePayment');  
             $table->bigInteger('GlobalepaymentId')->unsigned();  
             $table->decimal('Amount', 10, 2);  

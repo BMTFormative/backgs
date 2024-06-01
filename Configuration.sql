@@ -3,7 +3,7 @@
 CREATE VIEW TotalPayments AS
 SELECT 
     paycustomers."SaleNumber",  -- Identifier for each sale.
-    SUM(paycustomers."Amount") AS TotalPayment  -- The total sum of payments for each sale.
+    SUM(paycustomers."Amount") AS TotalPayment,  -- The total sum of payments for each sale.
 FROM 
     paycustomers
 GROUP BY 
@@ -33,13 +33,12 @@ SELECT
     coalesce(gs.GlobalSales, 0) AS GlobalSales  -- Sum of all sales per customer, with a fallback of 0 if none exist.
 FROM 
     (SELECT 
-        sales."CustomerId",
+        paycustomers."CustomerId",
         SUM(paycustomers."Amount") AS GlobalPayments
      FROM 
         paycustomers
-        JOIN sales ON paycustomers."SaleNumber" = sales."SaleNumber"
      GROUP BY 
-        sales."CustomerId") gp
+        paycustomers."CustomerId") gp
 FULL OUTER JOIN
     (SELECT 
         sales."CustomerId",
@@ -91,18 +90,19 @@ BEGIN
     FOR current_sale IN 
         SELECT 
             s."SaleNumber",  -- Sale number identifier.
-            s."created_at",  -- Date of sale, used to prioritize older debts.
-            s."totalamount" - COALESCE(SUM(p."Amount"), 0) AS outstanding  -- Calculated as total sale amount minus any payments already made.
+            s."DateSale",  -- Date of sale, used to prioritize older debts.
+            s."totalamount" - COALESCE(SUM(p."Amount"), 0) AS outstanding,  -- Calculated as total sale amount minus any payments already made.
+            s."CustomerId"
         FROM 
             totalamounts s
         LEFT JOIN 
             paycustomers p ON s."SaleNumber" = p."SaleNumber"
         GROUP BY 
-            s."SaleNumber", s."totalamount", s."created_at"
+            s."SaleNumber", s."totalamount", s."DateSale", s."CustomerId"
         HAVING 
             s."totalamount" - COALESCE(SUM(p."Amount"), 0) > 0  -- Filters to only include sales with outstanding amounts.
         ORDER BY 
-            s."created_at" ASC  -- Orders by sale date to ensure oldest debts are paid first.
+            s."DateSale" ASC  -- Orders by sale date to ensure oldest debts are paid first.
     LOOP
         -- Exit loop if there is no remaining payment to allocate.
         IF remaining_payment <= 0 THEN
@@ -113,8 +113,8 @@ BEGIN
         allocate_amount := LEAST(current_sale.outstanding, remaining_payment);
 
         -- Record the payment allocation in the 'paycustomers' table.
-        INSERT INTO public.paycustomers("SaleNumber", "DatePayment", "Amount", "GlobalepaymentId", "created_at", "updated_at")
-        VALUES (current_sale."SaleNumber", NOW(), allocate_amount, global_payment_id, NOW(), NOW());
+        INSERT INTO public.paycustomers("SaleNumber","CustomerId", "DatePayment", "Amount", "GlobalepaymentId", "created_at", "updated_at")
+        VALUES (current_sale."SaleNumber",current_sale."CustomerId", NOW(), allocate_amount, global_payment_id, NOW(), NOW());
 
         -- Subtract the allocated amount from the remaining payment total.
         remaining_payment := remaining_payment - allocate_amount;

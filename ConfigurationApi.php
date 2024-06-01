@@ -133,9 +133,10 @@ php artisan db:seed --class=StockSeeder
 -- Creating a migration for the 'paycustomers' table.
 php artisan make:migration create_paycustomers_table --create=paycustomers
 -- Defining the schema for the 'paycustomers' table.
-Schema::create('payheaders', function (Blueprint $table) {
+Schema::create('paycustomers', function (Blueprint $table) {
     $table->id();  -- Primary key for the paycustomers table.
     $table->string('SaleNumber');  -- Reference to the sale associated with the payment.
+    $table->bigInteger('CustomerId')->unsigned();  // bigint without foreign key constraint
     $table->dateTime('DatePayment');  -- Date and time of the payment.
     $table->bigInteger('GlobalepaymentId')->unsigned();  -- Reference to a global payment identifier, unsigned.
     $table->decimal('Amount', 10, 2);  -- Amount of the payment.

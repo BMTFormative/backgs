@@ -197,6 +197,30 @@ php artisan make:seeder GlobalpaymentSeeder
 php artisan db:seed --class=GlobalpaymentSeeder
 
 ------------------------------------
+------------------------------------
+-- Setup for the 'taxes' table, managing aggregated or large-scale taxes.
+
+-- Creating a migration for the 'taxes' table.
+php artisan make:migration create_taxes_table --create=taxes
+-- Defining the schema for the 'taxes' table.
+Schema::create('taxes', function (Blueprint $table) {
+            $table->id();  // Primary key for the taxes table
+            $table->string('TaxName');  // Name of the tax (e.g., VAT, GST)
+            $table->decimal('TaxRate', 5, 2);  // Tax rate as a percentage
+            $table->date('EffectiveDate');  // Start date from which the tax rate is applicable
+            $table->date('EndDate')->nullable();  // End date until which the tax rate is applicable
+            $table->text('Description')->nullable();  // Additional information about the tax
+            $table->timestamps();  // Timestamps for record creation and last update
+        });
+
+-- Generating corresponding model, controller with API resources, and seeder for global payments.
+php artisan make:model Taxe
+php artisan make:controller TaxeController --api
+php artisan make:seeder TaxeSeeder
+-- Seeding the 'Taxe' table with initial data.
+php artisan db:seed --class=TaxeSeeder
+
+------------------------------------
 -- Setup for models and controllers to handle views that calculate total payments and amounts.
 
 -- Creating a model and controller for handling 'totalpayment' view calculations.

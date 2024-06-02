@@ -3,7 +3,7 @@
 CREATE VIEW TotalPayments AS
 SELECT 
     paycustomers."SaleNumber",  -- Identifier for each sale.
-    SUM(paycustomers."Amount") AS TotalPayment,  -- The total sum of payments for each sale.
+    SUM(paycustomers."Amount") AS totalofpayment,  -- The total sum of payments for each sale.
 FROM 
     paycustomers
 GROUP BY 
@@ -15,12 +15,13 @@ GROUP BY
 CREATE VIEW TotalAmounts AS
 SELECT 
     "SaleNumber",  -- Sale identifier.
-    SUM("Qty" * "Prix") AS TotalAmount,  -- Total revenue generated from each sale.
-    "DateSale"  -- Date of the sale.
+    "TotalAmountWith",  -- Total revenue generated from each sale.
+    "DateSale",  -- Date of the sale.
+    "CustomerId"
 FROM 
     sales
 GROUP BY 
-    "SaleNumber", "DateSale";
+    "SaleNumber", "DateSale","CustomerId","TotalAmountWith";
 -- End of view: TotalAmounts
 
 
@@ -91,16 +92,16 @@ BEGIN
         SELECT 
             s."SaleNumber",  -- Sale number identifier.
             s."DateSale",  -- Date of sale, used to prioritize older debts.
-            s."totalamount" - COALESCE(SUM(p."Amount"), 0) AS outstanding,  -- Calculated as total sale amount minus any payments already made.
+            s."TotalAmountWith" - COALESCE(SUM(p."Amount"), 0) AS outstanding,  -- Calculated as total sale amount minus any payments already made.
             s."CustomerId"
         FROM 
             totalamounts s
         LEFT JOIN 
             paycustomers p ON s."SaleNumber" = p."SaleNumber"
         GROUP BY 
-            s."SaleNumber", s."totalamount", s."DateSale", s."CustomerId"
+            s."SaleNumber", s."TotalAmountWith", s."DateSale", s."CustomerId"
         HAVING 
-            s."totalamount" - COALESCE(SUM(p."Amount"), 0) > 0  -- Filters to only include sales with outstanding amounts.
+            s."TotalAmountWith" - COALESCE(SUM(p."Amount"), 0) > 0  -- Filters to only include sales with outstanding amounts.
         ORDER BY 
             s."DateSale" ASC  -- Orders by sale date to ensure oldest debts are paid first.
     LOOP

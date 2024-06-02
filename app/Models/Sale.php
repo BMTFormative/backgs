@@ -20,7 +20,10 @@ class Sale extends Model
     }
     public function saledetail()
     {
-        return $this->belongsTo(Saledetail::class, 'SaleId', 'id');
+        return $this->hasMany(Saledetail::class, 'SaleId', 'id');
+    }
+    public function totalPayment() {
+        return $this->hasOne(TotalPayment::class, 'SaleNumber', 'SaleNumber');
     }
 }
 

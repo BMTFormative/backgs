@@ -16,7 +16,7 @@ class SaleController extends Controller
     public function index()
     {
         // Fetch all sales with related customer and product details loaded
-        $sales = Sale::with(['customer', 'saledetail.product'])->get();
+        $sales = Sale::with(['customer', 'saledetail.product','totalPayment'])->get();
 
         // Temporary array to hold formatted data
         $groupedData = [];
@@ -34,23 +34,22 @@ class SaleController extends Controller
                     'DateSale' => $sale->DateSale, // Ensure the date format is correct
                     'OrderType' => $sale->OrderType,
                     'DynamicFields' => [],
-                    'TotalPayment' => 0, // Initialize TotalPayment
+                    'TotalPayment' => $sale->totalPayment ? $sale->totalPayment->totalofpayment : 0,
                     'TotalAmount' => $sale->TotalAmount, 
                 ];
             }
 
             // Process each sale detail item
-            if ($sale->saledetail) {
-                $detail = $sale->saledetail; // Access the Saledetail directly since it's not a collection
+            foreach ($sale->saledetail as $detail) {
                 $groupedData[$key]['DynamicFields'][] = [
                     'ProductId' => $detail->ProductId,
                     'Designation' => $detail->product ? $detail->product->Designation : 'Unknown',
                     'Qty' => $detail->Qty,
                     'PrixVente' => $detail->PrixVente,
-                    'Montant' => $detail->Montant, // Calculate Montant
+                    'Montant' => $detail->Montant,
                 ];
-    
             }
+            
 
             // You might need additional data handling to calculate TotalPayment, assuming it's from a different model or calculation
         }

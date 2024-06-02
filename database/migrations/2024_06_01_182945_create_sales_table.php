@@ -18,10 +18,12 @@ class CreateSalesTable extends Migration
             $table->string('SaleNumber');
             $table->dateTime('DateSale');
             $table->string('OrderType');
-            $table->bigInteger('CustomerId')->unsigned(); // Change to bigInteger, unsigned
-            $table->bigInteger('ProductId')->unsigned(); // Change to bigInteger, unsigned
-            $table->integer('Qty');
-            $table->decimal('Prix', 10, 2);
+            $table->bigInteger('CustomerId')->unsigned(); // Change to bigInteger, unsigned            
+            $table->bigInteger('TaxId')->unsigned();  // bigint without foreign key constraint
+            $table->decimal('TotalAmount ', 10, 2);
+            $table->decimal('TotalTax', 10, 2);
+            $table->decimal('TotalDiscount', 10, 2);
+            $table->decimal('TotalAmountWith', 10, 2);
             $table->timestamps();
         });
     }

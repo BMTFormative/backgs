@@ -6,8 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sale extends Model
 {
-    protected $fillable = ['SaleNumber', 'DateSale', 'OrderType', 'CustomerId', 'ProductId', 'Qty', 'Prix'];
+    protected $fillable = ['SaleNumber', 'DateSale','SaleId', 'OrderType', 'CustomerId', 'ProductId', 'TaxId', 'TotalAmount','TotalTax','TotalDiscount','TotalAmountWith'];
 
+    
     public function customer()
     {
         return $this->belongsTo(Customer::class, 'CustomerId', 'id');
@@ -16,6 +17,10 @@ class Sale extends Model
     public function product()
     {
         return $this->belongsTo(Product::class, 'ProductId', 'id');
+    }
+    public function saledetail()
+    {
+        return $this->belongsTo(Saledetail::class, 'SaleId', 'id');
     }
 }
 

@@ -56,8 +56,8 @@ CREATE VIEW product_qty_changes AS
 WITH sales_sum AS (
     SELECT
         "ProductId",
-        SUM("Qty") AS decrease  -- Total units sold.
-    FROM sales
+        SUM("Quantity") AS decrease  -- Total units sold.
+    FROM salesDetails
     GROUP BY "ProductId"
 ),
 stocks_sum AS (

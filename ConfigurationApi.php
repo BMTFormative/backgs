@@ -83,24 +83,50 @@ php artisan db:seed --class=CustomerSeeder
 php artisan make:migration create_sales_table --create=sales
 -- Defining the schema for the 'sales' table.
 Schema::create('sales', function (Blueprint $table) {
-    $table->id();  -- Primary key for the sales table.
-    $table->string('SaleNumber');  -- Identifier for the sale.
-    $table->dateTime('DateSale');  -- Date and time of the sale.
-    $table->string('OrderType');  -- Type of the order (e.g., online, in-store).
-    $table->bigInteger('CustomerId')->unsigned();  -- Reference to the customer, unsigned for foreign key relation.
-    $table->bigInteger('ProductId')->unsigned();  -- Reference to the product sold, unsigned for foreign key relation.
-    $table->integer('Qty');  -- Quantity of the product sold.
-    $table->decimal('Prix', 10, 2);  -- Price at which the product was sold.
-    $table->timestamps();  -- Timestamps for record creation and last update.
-});
-
+            $table->id();
+            $table->string('SaleNumber');
+            $table->dateTime('DateSale');
+            $table->string('OrderType');
+            $table->bigInteger('CustomerId')->unsigned(); // Change to bigInteger, unsigned            
+            $table->bigInteger('TaxId')->unsigned();  // bigint without foreign key constraint
+            $table->decimal('TotalAmount ', 10, 2);
+            $table->decimal('TotalTax', 10, 2);
+            $table->decimal('TotalDiscount', 10, 2);
+            $table->decimal('TotalAmountWith', 10, 2);
+            $table->timestamps();
+        });
 -- Generating corresponding model, controller with API resources, and seeder for sales.
 php artisan make:model Sale
 php artisan make:controller SaleController --api
 php artisan make:seeder SaleSeeder
 -- Seeding the 'sales' table with initial data.
 php artworkisan db:seed --class=SaleSeeder
+------------------------------------
+-- Setup for the 'sales' table in the Laravel application.
 
+-- Creating a migration for the 'saledetails' table.
+php artisan make:migration create_saledetails_table --create=saledetails
+-- Defining the schema for the 'saledetails' table.
+Schema::create('saledetails', function (Blueprint $table) {
+            $table->id();
+            $table->bigInteger('SaleId')->unsigned();  // bigint without foreign key constraint
+            $table->bigInteger('ProductId')->unsigned();  // bigint without foreign key constraint
+            $table->bigInteger('TaxId')->unsigned();  // bigint without foreign key constraint
+            $table->integer('Qty');
+            $table->decimal('UnitPrice', 10, 2);
+            $table->decimal('PrixVente', 10, 2); // Before tax
+            $table->decimal('Discount', 10, 2); //  Calculated from Discount 
+            $table->decimal('TaxAmount', 10, 2); //  Calculated from TaxRate in the Tax Table
+            $table->decimal('Montant', 10, 2); // Sum of TotalPrice and (TaxAmount Or Discount )          
+            $table->timestamps();
+        });
+
+-- Generating corresponding model, controller with API resources, and seeder for sales.
+php artisan make:model SaleDetail
+php artisan make:controller SaleDetailController --api
+php artisan make:seeder SaleDetailSeeder
+-- Seeding the 'SaleDetails' table with initial data.
+php artworkisan db:seed --class=SaleDetailSeeder
 ------------------------------------
 -- Setup for the 'stocks' table, managing inventory entries.
 

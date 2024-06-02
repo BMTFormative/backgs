@@ -92,7 +92,7 @@ Schema::create('sales', function (Blueprint $table) {
             $table->decimal('TotalAmount ', 10, 2);
             $table->decimal('TotalTax', 10, 2);
             $table->decimal('TotalDiscount', 10, 2);
-            $table->decimal('TotalAmountWith', 10, 2);
+            $table->decimal('TotalAmountWith', 10, 2)->nullable();
             $table->timestamps();
         });
 -- Generating corresponding model, controller with API resources, and seeder for sales.

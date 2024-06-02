@@ -23,7 +23,7 @@ class CreateSalesTable extends Migration
             $table->decimal('TotalAmount', 10, 2);
             $table->decimal('TotalTax', 10, 2)->nullable();
             $table->decimal('TotalDiscount', 10, 2)->nullable();
-            $table->decimal('TotalAmountWith', 10, 2);
+            $table->decimal('TotalAmountWith', 10, 2)->nullable();
             $table->timestamps();
         });
     }

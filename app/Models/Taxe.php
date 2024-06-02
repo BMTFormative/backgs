@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Taxe extends Model
 {
     protected $fillable = [
-        'TaxName', 'TaxRate', 'EffectiveDate', 'EndDate', 'Description'
+        'TaxName', 'TaxRate', 'EffectiveDate', 'EndDate', 'Description','Status'
     ];
 }

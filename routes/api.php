@@ -43,4 +43,5 @@ Route::apiResource('taxes', TaxeController::class);
 
 
 Route::get('sales/by-number/{saleNumber}', [SaleController::class, 'fetchBySaleNumber']);
-
+// Additional route for updating the status of a tax
+Route::patch('taxes/{tax}/Status', [TaxeController::class, 'updateStatus']);

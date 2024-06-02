@@ -20,6 +20,7 @@ class CreateTaxesTable extends Migration
             $table->date('EffectiveDate');  // Start date from which the tax rate is applicable
             $table->date('EndDate')->nullable();  // End date until which the tax rate is applicable
             $table->text('Description')->nullable();  // Additional information about the tax
+            $table->boolean('Status')->default(true); // Status of the tax, default is true
             $table->timestamps();  // Timestamps for record creation and last update
         });
     }

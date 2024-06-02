@@ -42,7 +42,7 @@ FROM
 FULL OUTER JOIN
     (SELECT 
         sales."CustomerId",
-        SUM(sales."Qty"::numeric * sales."Prix") AS GlobalSales
+        SUM(sales."TotalAmountWith") AS GlobalSales
      FROM 
         sales
      GROUP BY 
@@ -56,8 +56,8 @@ CREATE VIEW product_qty_changes AS
 WITH sales_sum AS (
     SELECT
         "ProductId",
-        SUM("Quantity") AS decrease  -- Total units sold.
-    FROM salesDetails
+        SUM("Qty") AS decrease  -- Total units sold.
+    FROM saledetails
     GROUP BY "ProductId"
 ),
 stocks_sum AS (

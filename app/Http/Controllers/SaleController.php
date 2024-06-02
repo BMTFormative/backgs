@@ -71,6 +71,7 @@ class SaleController extends Controller
 
     public function store(Request $request)
     {
+        // Log all request data
         DB::beginTransaction();
         try {
             // Initialize the sale with the initial data
@@ -79,10 +80,12 @@ class SaleController extends Controller
                 'CustomerId' => $request->CustomerId,
                 'DateSale' => $request->DateSale,
                 'OrderType' => $request->OrderType,
+                'TotalAmount' => $request->TotalAmount,
+                
             ]);
             $sale->save();
 
-            $totalAmount = 0; // Initialize total amount
+            $totalamount =  $request->TotalAmount; // Initialize total amount
             $totaltax = 0; // Initialize total tax
             $totaldiscount = 0; // Initialize total discount
             // Verify if sale details are provided and are in an array format
@@ -102,19 +105,18 @@ class SaleController extends Controller
                     $saleDetail->save();
 
                     // Accumulate the total amount
-                    $totalAmount += $montant;
+                    //$totalAmount += $montant;
                 }
 
                 // Update the sale's total amount if needed
-                $sale->TotalAmount = $totalAmount;
-                $sale->TotalAmountWith = $totalAmount + $totaltax - $totaldiscount;
-                $sale->save();
+                 $sale->TotalAmountWith = $totalamount + $totaltax - $totaldiscount;
+                 $sale->save();
             } else {
                 throw new Exception("Invalid or missing dynamic fields");
             }
 
             DB::commit();
-            return response()->json(['message' => 'Sale and details added successfully', 'TotalAmount' => $totalAmount], 201);
+            return response()->json(['message' => 'Sale and details added successfully'], 201);
 
         } catch (\Exception $e) {
             DB::rollback();

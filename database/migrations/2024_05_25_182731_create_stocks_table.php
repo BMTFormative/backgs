@@ -21,8 +21,8 @@ class CreateStocksTable extends Migration
             $table->bigInteger('ProductId')->unsigned();  // bigint without foreign key constraint
             $table->integer('Qty');
             $table->decimal('PrixAchat', 10, 2);
-            $table->decimal('PrixGros', 10, 2);
-            $table->decimal('PrixDetail', 10, 2);
+            $table->decimal('PrixGros', 10, 2)->nullable();
+            $table->decimal('PrixDetail', 10, 2)->nullable();
             $table->timestamps();
         });
     }

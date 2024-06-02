@@ -17,12 +17,11 @@ class CreateSaledetailsTable extends Migration
             $table->id();
             $table->bigInteger('SaleId')->unsigned();  // bigint without foreign key constraint
             $table->bigInteger('ProductId')->unsigned();  // bigint without foreign key constraint
-            $table->bigInteger('TaxId')->unsigned();  // bigint without foreign key constraint
+            $table->bigInteger('TaxId')->nullable()->unsigned();  // bigint without foreign key constraint
             $table->integer('Qty');
-            $table->decimal('UnitPrice', 10, 2);
             $table->decimal('PrixVente', 10, 2); // Before tax
-            $table->decimal('Discount', 10, 2); //  Calculated from Discount 
-            $table->decimal('TaxAmount', 10, 2); //  Calculated from TaxRate in the Tax Table
+            $table->decimal('Discount', 10, 2)->nullable(); //  Calculated from Discount 
+            $table->decimal('TaxAmount', 10, 2)->nullable(); //  Calculated from TaxRate in the Tax Table
             $table->decimal('Montant', 10, 2); // Sum of TotalPrice and (TaxAmount Or Discount )          
             $table->timestamps();
         });

@@ -18,7 +18,7 @@ class CreatePaycustomersTable extends Migration
             $table->string('SaleNumber');  
             $table->bigInteger('CustomerId')->unsigned();  // bigint without foreign key constraint
             $table->dateTime('DatePayment');  
-            $table->bigInteger('GlobalepaymentId')->unsigned();  
+            $table->bigInteger('GlobalepaymentId')->nullable()->unsigned();  
             $table->decimal('Amount', 10, 2);  
             $table->timestamps();  
         });
